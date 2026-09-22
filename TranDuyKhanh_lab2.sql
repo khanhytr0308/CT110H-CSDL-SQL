@@ -47,7 +47,7 @@ CREATE TABLE Caidat(
     idPM VARCHAR(50),
     ngaycai date DEFAULT (CURRENT_DATE),
     foreign key (idMay) references May(idMay),
-    foreign key (idPM) references Phanmen(idPM)
+    foreign key (idPM) references Phanmem(idPM)
 );
 
 -- cau 2
@@ -116,159 +116,77 @@ VALUES
 ('p11', 'log7', 10, '2003-04-20'),
 ('p7', 'log7', 11, '2002-04-01');
 
--- cua 3
-UPDATE Khuvuc
-SET tang = 0
-WHERE IP = '130.120.80';
+-- cau 1
+select M.idMay, M.tenmay, L.tenloai
+from May M
+join Loai L on M.idloai = L.idloai
+where M.idMay = 'p8';
 
-UPDATE Khuvuc
-SET tang = 1
-WHERE IP = '130.120.81';
+-- cau 2
+select * from Phanmem
+where idLoai = 'UNIX';
 
-UPDATE Khuvuc
-SET tang = 2
-WHERE IP = '130.120.82';
+--cau 3
+
+select P.tenphong, P.IP, P.MP
+from phong P
+join May M on P.MP = M.MP
+where M.idLoai =  'UNIX' OR M.idLoai = 'PCWS';
+
 
 -- cau 4
-UPDATE Phanmem
-SET gia = gia * 0.9
-WHERE idloai = 'PCNT';
+SELECT DISTINCT P.tenphong, P.IP, P.MP
+FROM phong P
+JOIN May M ON P.MP = M.MP
+WHERE (M.idLoai = 'UNIX' OR M.idLoai = 'PCWS')
+  AND P.IP = '130.120.80'
+ORDER BY P.MP desc;
 
 -- cau 5
-ALTER TABLE May
-ADD COLUMN nbLog SMALLINT;
-
-ALTER TABLE Phanmem
-ADD COLUMN nbInstall SMALLINT;
-
-UPDATE May
-SET nbLog = 0
-WHERE idMay = 'p1';
-
-UPDATE May
-SET nbLog = 2
-WHERE idMay = 'p2';
-
-UPDATE May
-SET nbLog = 0
-WHERE idMay = 'p3';
-
-UPDATE May
-SET nbLog = 1
-WHERE idMay = 'p4';
-
-UPDATE May
-SET nbLog = 0
-WHERE idMay = 'p5';
-
-UPDATE May
-SET nbLog = 2
+SELECT COUNT(*) AS so_luong_phan_mem
+FROM Caidat
 WHERE idMay = 'p6';
 
-UPDATE May
-SET nbLog = 1
-WHERE idMay = 'p7';
+-- cau 6
 
-UPDATE May
-SET nbLog = 2
-WHERE idMay = 'p8';
+select count(*) as soPMlog1
+from Caidat
+where idPM = 'log1';
 
-UPDATE May
-SET nbLog = 0
-WHERE idMay = 'p9';
-
-UPDATE May
-SET nbLog = 0
-WHERE idMay = 'p10';
-
-UPDATE May
-SET nbLog = 2
-WHERE idMay = 'p11';
-
-UPDATE May
-SET nbLog = 1
-WHERE idMay = 'p12';
-
-UPDATE Phanmem
-SET nbInstall = 2
-WHERE idPM = 'log1';
-
-UPDATE Phanmem
-SET nbInstall = 2
-WHERE idPM = 'log2';
-
-UPDATE Phanmem
-SET nbInstall = 1
-WHERE idPM = 'log3';
-
-UPDATE Phanmem
-SET nbInstall = 1
-WHERE idPM = 'log4';
-
-UPDATE Phanmem
-SET nbInstall = 1
-WHERE idPM = 'log5';
-
-UPDATE Phanmem
-SET nbInstall = 2
-WHERE idPM = 'log6';
-
-UPDATE Phanmem
-SET nbInstall = 2
-WHERE idPM = 'log7';
-
--- cau6
-CREATE TABLE PhanmemUNIX(
-    idPM varchar(50),
-    tenPM varchar(50) not null,
-    ngaymua date,
-    version varchar(50)
-);
 -- cau 7
-ALTER TABLE PhanmemUNIX
-ADD PRIMARY KEY (idPM);
+select P.IP, M.tenmay
+from Phong P
+join May M on P.IP = M.IP
+where M.idLoai = 'TX';
 
--- cau8
-alter table PhanmemUNIX
-add column gia int;
+-- cau 8
+select avg(gia) as avg_unix
+from Phanmem
+where idLoai = 'UNIX';
 
--- cau9
-ALTER TABLE PhanmemUNIX
-MODIFY COLUMN version varchar(15);
+-- cau 9
+select P.tenphong
+from Phong P
+join May M on P.MP = M.MP
+join Caidat C on M.idMay = C.idMay
+join Phanmem PM on C.idPM = PM.idPM
+where PM.tenPM like 'Oracle%';
 
--- cau10
-ALTER TABLE PhanmemUNIX
-ADD CONSTRAINT UQ_tenPM
-UNIQUE (tenPM);
+-- cau 10
+select distinct PM.tenPM
+from Phanmem PM
+join Caidat C on PM.idPM = C.idPM
+join May M on M.idMay = C.idMay
+join Phong P on P.MP = M.MP
+where P.tenphong = 'Salle 1'; 
 
--- cau11
-INSERT INTO PhanmemUNIX
-    (idPM, tenPM, ngaymua, version, gia)
-SELECT
-    idPM, tenPM, ngaymua, version, gia
-FROM Phanmem;
+-- cau 11
+select PM.tenPM
+from Phanmem PM
+where PM.ngaymua like '1997%';
 
--- cau12
-alter table PhanmemUNIX
-drop column version;
+-- cau 12
 
--- cau 13
-delete from Phanmem
-where gia > 5000; --khong thanh cong
-
--- cau 14
-delete from PhanmemUNIX
-where gia > 5000;
-
--- cau 15
-drop table Phanmem;
-
--- cau 16
-drop table PhanmemUNIX;
-
--- cau 17
-alter table May
-drop column nbLog;
-
-alter table Phanmem
-drop column nbInstall;
+select tenPM
+from Phanmem
+where gia > 2000 and idloai = 'UNIX';

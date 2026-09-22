@@ -1,0 +1,6 @@
+turn on sql server
+sudo /usr/local/mysql/support-files/mysql.server start
+turn offf sql server
+sudo /usr/local/mysql/support-files/mysql.server stop
+check sql server status
+sudo /usr/local/mysql/support-files/mysql.server status
