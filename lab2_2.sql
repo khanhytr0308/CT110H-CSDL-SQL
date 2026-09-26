@@ -148,3 +148,32 @@ where idMay = 'p6';
 select count(*) as so_cac_may
 from caidat 
 where idPM = 'log1';
+
+--cau 7
+select tenmay, IP
+from May
+where idLoai = 'TX';
+
+-- cau 8
+select c.idMay, count(c.idPM) as so_luong
+from Caidat c
+group by c.idMay
+
+-- cau 9
+select P.tenphong, count(M.idMay) as so_luong
+from Phong P
+left join May M on M.MP = P.MP
+group by P.tenphong;
+
+-- cau 10
+select M.idMay, count(C.idPM) as so_luong_cai_dat
+from May M
+left join Caidat C on C.idMay = M.idMay
+group by M.idMay;
+
+--cau 11
+select avg(gia) as gia_avg_unix
+from Phanmem
+where idloai = 'UNIX';
+
+--cau 12
