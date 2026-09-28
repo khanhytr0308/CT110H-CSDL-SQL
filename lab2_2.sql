@@ -177,3 +177,19 @@ from Phanmem
 where idloai = 'UNIX';
 
 --cau 12
+select max(ngaymua) as ngay_mua_gan_nhat
+from phanmem;
+
+-- cau 13
+select idMay, count(idPM) as may_tren_2PM
+from caidat
+group by idMay
+having count(idPM) >= 2;
+
+-- cau 14
+select count(*) from{
+    select idMay, count(idPM)
+    from caidat
+    group by idMay
+    having count(idPM) >= 2;
+} as so_may
