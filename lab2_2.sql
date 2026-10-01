@@ -132,14 +132,14 @@ from Phong P
 join May M on P.MP = M.MP
 where idloai = 'UNIX' or 'PCWS';
 
---cau 4
+-- cau 4
 select P.tenphong, P.IP, M.MP
 from Phong P 
 join May M on P.MP = M.IP
 where M.IP = '130.120.80'
 ORDER BY P.MP desc;
 
---cau 5
+-- cau 5
 select count(*) as so_luong_phan_mem
 from Caidat
 where idMay = 'p6';
@@ -149,7 +149,7 @@ select count(*) as so_cac_may
 from caidat 
 where idPM = 'log1';
 
---cau 7
+-- cau 7
 select tenmay, IP
 from May
 where idLoai = 'TX';
@@ -157,7 +157,7 @@ where idLoai = 'TX';
 -- cau 8
 select c.idMay, count(c.idPM) as so_luong
 from Caidat c
-group by c.idMay
+group by c.idMay;
 
 -- cau 9
 select P.tenphong, count(M.idMay) as so_luong
@@ -171,12 +171,12 @@ from May M
 left join Caidat C on C.idMay = M.idMay
 group by M.idMay;
 
---cau 11
+-- cau 11
 select avg(gia) as gia_avg_unix
 from Phanmem
 where idloai = 'UNIX';
 
---cau 12
+-- cau 12
 select max(ngaymua) as ngay_mua_gan_nhat
 from phanmem;
 
@@ -187,9 +187,93 @@ group by idMay
 having count(idPM) >= 2;
 
 -- cau 14
-select count(*) from{
+select count(*) from(
     select idMay, count(idPM)
     from caidat
     group by idMay
-    having count(idPM) >= 2;
-} as so_may
+    having count(idPM) >= 2
+) as so_may;
+
+-- cau 15
+select L.idLoai
+from Loai L
+left join May M
+    on M.idLoai = l.idLoai
+where M.idLoai is null;
+
+-- cau 16 
+select distinct L.idLoai
+from Loai L 
+inner join Phanmem PM on PM.idLoai = L.idLoai
+inner join May M on M.idLoai = L.idLoai;
+
+-- cau 17
+select M.idLoai
+from May M 
+left join Phanmem P on P.idLoai = M.idLoai
+where P.idLoai is null;
+
+-- cau 18
+select M.IP 
+from May M
+where M.idMay in (
+	select C.idMay
+    from Caidat C 
+    where C.idPM = 'log6'
+);
+
+-- cau 19
+select M.IP
+from May M
+where M.idMay in (
+	select C.idMay
+    from Caidat C
+    where C.idMay = 'Oracle 8'
+);
+
+-- cau 20
+select K.tenkhuvuc
+from Khuvuc K
+where K.IP in (
+	select M.IP
+    from May M
+    where M.idLoai = 'TX'
+	GROUP BY M.IP
+	HAVING COUNT(M.idMay) = 3
+);
+
+-- cau 21
+select P.tenphong
+from Phong P
+where P.MP in (
+	select M.MP
+    from May M
+	where M.idMay in (
+		select C.idMay
+        from Caidat C
+        where C.idPM in (
+			select PM.idPM
+			from Phanmem PM
+            where PM.tenPM = 'Oracle 6'
+            )
+		)
+);
+
+-- cau 22
+select PM.tenPM
+from Phanmem PM
+where PM.ngaymua in(
+	select max(ngaymua) as ngay_mua_gan_nhat
+	from phanmem
+);
+
+
+    
+
+    
+    
+
+
+
+
+

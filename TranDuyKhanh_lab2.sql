@@ -190,3 +190,6 @@ where PM.ngaymua like '1997%';
 select tenPM
 from Phanmem
 where gia > 2000 and idloai = 'UNIX';
+
+--  cau 13
+
