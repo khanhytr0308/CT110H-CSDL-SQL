@@ -267,13 +267,44 @@ where PM.ngaymua in(
 	from phanmem
 );
 
+-- cau 23
+select M.IP
+from May M
+join Caidat C on C.idMay = M.idMay
+where C.idPM = 'log6';
 
-    
+-- cau 24
+select M.IP
+from May M
+join Phanmem PM on PM.idLoai = M.idLoai
+where PM.tenPM = 'Oracle 8';
 
-    
-    
+-- cau 25
+select K.tenkhuvuc
+from Khuvuc K
+join May M on M.IP = K.IP
+where M.idLoai = 'TX'
+group by M.IP 
+having count(*) >= 3;
 
+-- cau 26
+SELECT P.tenphong
+FROM Phong P
+JOIN May M ON M.MP = P.MP
+JOIN Caidat C ON C.idMay = M.idMay
+JOIN Phanmem PM ON PM.idPM = C.idPM
+WHERE PM.tenPM = 'Oracle 6'
+GROUP BY P.MP, P.tenphong
+HAVING COUNT(*) = 1;
 
-
-
-
+-- cau 27
+select distinct M.idMay
+from May M 
+join Caidat C on C.idMay = M.idmay
+where M.idMay <> 'p6'
+and exists(
+    select 1
+    from Caidat C6
+    where C6.idMay = 'p6'
+        and C6.idPM = C.idPM
+);
