@@ -298,13 +298,78 @@ GROUP BY P.MP, P.tenphong
 HAVING COUNT(*) = 1;
 
 -- cau 27
-select distinct M.idMay
-from May M 
-join Caidat C on C.idMay = M.idmay
-where M.idMay <> 'p6'
-and exists(
-    select 1
-    from Caidat C6
-    where C6.idMay = 'p6'
-        and C6.idPM = C.idPM
+select distinct C.idMay
+from Caidat C 
+where C.idPM in (
+    select idPM
+    from Caidat 
+    where idMay = 'p6'
+)
+and C.idMay <> 'p6';
+
+-- cau 28
+select tenPM
+from phanmem
+where idLoai = 'PCNT'
+and gia > any (
+    select gia 
+    from Phanmem
+    where idLoai = 'UNIX'
 );
+
+-- cau 29
+select tenPM
+from phanmem
+where idLoai = 'UNIX'
+and gia > all (
+    select gia
+    from Phanmem
+    where idLoai = 'PCNT'
+);
+
+-- cau 30
+SELECT DISTINCT C.idMay
+FROM Caidat C
+WHERE C.idMay <> 'p6'
+AND NOT EXISTS (
+    SELECT *
+    FROM Caidat P6
+    WHERE P6.idMay = 'p6'
+    AND NOT EXISTS (
+        SELECT *
+        FROM Caidat X
+        WHERE X.idMay = C.idMay
+        AND X.idPM = P6.idPM
+    )
+);
+
+-- cau 31
+SELECT DISTINCT C.idMay
+FROM Caidat C
+WHERE C.idMay <> 'p2'
+
+AND NOT EXISTS (
+    SELECT *
+    FROM Caidat P2
+    WHERE P2.idMay = 'p2'
+    AND NOT EXISTS (
+        SELECT *
+        FROM Caidat X
+        WHERE X.idMay = C.idMay
+        AND X.idPM = P2.idPM
+    )
+)
+
+AND NOT EXISTS (
+    SELECT *
+    FROM Caidat X
+    WHERE X.idMay = C.idMay
+    AND NOT EXISTS (
+        SELECT *
+        FROM Caidat P2
+        WHERE P2.idMay = 'p2'
+        AND P2.idPM = X.idPM
+    )
+);
+
+
