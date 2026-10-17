@@ -151,3 +151,35 @@ INSERT INTO MUON VALUES (25,'2006-8-19','2006-9-2','2006-9-3',1);
 INSERT INTO MUON VALUES (26,'2006-11-15','2006-11-29','2006-11-22',9);
 INSERT INTO MUON VALUES (29,'2007-9-20','2007-10-4', NULL,27);
 
+-- cau 1
+select T.NT, T.tua
+from TACPHAM T
+where T.tacgia = 'Guy de Maupassant';
+
+-- cau 2
+select D.ten
+from DOCGIA D
+where D.ten = '32 rue des Alouettes, 75003 Paris';
+
+-- cau 3
+select S.nxb
+from SACH S
+join TACPHAM T on T.NT = S.NT
+where T.tua like '%Fleur%';
+
+-- cau 4 
+select T.tua
+from TACPHAM T 
+where T.tua like 'Le %';
+
+-- cau 5
+select D.ten
+from DOCGIA D 
+join MUON M on M.ND = D.ND
+where M.ngaymuon
+between '2007-09-15' and '2007-09-20';
+
+-- cau 6
+select count(T.NT) as so_tac_pham
+from TACPHAM T;
+
