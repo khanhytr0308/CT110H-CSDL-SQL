@@ -183,3 +183,192 @@ between '2007-09-15' and '2007-09-20';
 select count(T.NT) as so_tac_pham
 from TACPHAM T;
 
+-- cau 7 
+select T.tacgia, count(T.tacgia) as so_luong
+from TACPHAM T 
+group by T.tacgia;
+
+-- cau 8
+select T.tacgia, count(T.tacgia) as so_luong
+from TACPHAM T 
+group by T.tacgia
+having count(T.tacgia) >= 2;
+
+-- cau 9
+select distinct T.tua, count(S.NT) as so_luong_sach
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+group by S.NT;
+
+-- cau 10
+select T.tua, count(S.NS) as so_sach
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+group by T.tua
+having count(S.NS) in (
+	select max(A.so_sach)
+	from (
+		select count(*) as so_sach
+		from SACH 
+		group by NT
+	) A
+);
+
+-- cau 11
+-- Tên nhà xuất bản xuất bản nhiều sách nhất
+select S.nxb, count(S.NS) as so_sach
+from SACH S 
+group by S.nxb
+having count(S.NS) in (
+	select max(A.so_sach)
+	from (
+		select count(*) as so_sach
+		from SACH
+		group by nxb
+	) A
+);
+
+-- cau 12
+-- Nhà xuất bản của tác phẩm tiêu đề 'Germinal'.
+select distinct S.nxb
+from SACH S 
+join TACPHAM T on T.NT = S.NT
+where T.tua like '%Germinal%';
+
+-- cau 13
+-- Tựa của tác phẩm mà có ít nhất hai quyển sách.
+select T.tua, count(S.NS) as so_sach
+from TACPHAM T
+join SACH S on S.NT = T.NT
+group by S.NT, T.tua
+having count(S.NS) >= 2;
+
+-- cau 14 
+-- Tên độc giả đã mượn tác phẩm 'Poésie'.
+select D.ten
+from DOCGIA D
+join MUON M on M.ND = D.ND
+join SACH S on S.NS = M.NS
+join TACPHAM T on T.NT = S.NT
+where T.tua like '%Poésie%';
+
+-- cau 15 
+-- Những độc giả nào đã mượn tác phẩm Les 'Fleurs du mal'
+select D.ten
+from DOCGIA D
+join MUON M on M.ND = D.ND
+join SACH S on S.NS = M.NS
+join TACPHAM T on T.NT = S.NT
+where T.tua like '%Les Fleurs du mal%';
+
+-- cau 16
+-- Tìm số lần mượn sách của mỗi độc giả theo năm
+select D.ND, D.ten, year(M.ngaymuon) as nam, count(*) as so_lan
+from DOCGIA D 
+join MUON M on M.ND = D.ND
+group by D.ND, D.ten, year(M.ngaymuon)
+ORDER BY so_lan DESC;
+
+-- cau 17 
+--  Tìm tựa sách, tên độc giả của các độc giả chưa trả sách
+select T.tua, D.ten
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+join MUON M on M.NS = S.NS 
+join DOCGIA D on D.ND = M.ND
+where M.ngaytra is NULL;
+
+-- cau 18
+-- Tìm các tựa sách, tên độc giả của các độc giả trả sách quá thời hạn cho phép
+select distinct T.tua, D.ten, D.ND
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+join MUON M on M.NS = S.NS 
+join DOCGIA D on D.ND = M.ND
+where M.hantra < M.ngaytra;
+
+-- cau 19
+-- Tìm các tựa sách, tên độc giả của các độc giả trả sách trước thời hạn
+select T.tua, D.ten, D.ND
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+join MUON M on M.NS = S.NS 
+join DOCGIA D on D.ND = M.ND
+where M.hantra > M.ngaytra;
+
+-- cau 20
+-- Tìm tựa tác phẩm có nhiều người mượn nhất
+select T.tua, count(*) as so_luong 
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+join MUON M on M.NS = S.NS
+group by T.tua, T.NT
+having count(*) in(
+	select max(A.so_luong)
+	from (
+		select count(*) as so_luong
+		from SACH S2
+		join MUON M2 on M2.NS = S2.NS
+		group by S2.NT
+	) A
+);
+
+-- cau 21
+-- Tìm tựa tác phẩm có ít người mượn nhất
+select T.tua, count(*) as so_luong
+from TACPHAM T 
+join SACH S on S.NT = T.NT
+join MUON M on M.NS = S.NS
+group by T.NT, T.tua
+having count(*) = (
+	select min(A.so_luong)
+	from (
+		select count(*) as so_luong
+		from SACH S2
+		join MUON M2 on M2.NS = S2.NS
+		group by S2.NT
+	) A
+);
+
+-- cau 22
+-- Tìm độc giả mượn nhiều tác phẩm nhất
+select D.ND, D.ten, count(distinct S.NT) as so_luong
+from DOCGIA D 
+join MUON M on M.ND = D.ND
+join SACH S on S.NS = M.NS
+group by D.ND, D.ten
+having count(distinct S.NT) = (
+	select max(A.so_luong)
+	from (
+		select count(distinct S2.NT) as so_luong
+		FROM DOCGIA D2
+        JOIN MUON M2 ON M2.ND = D2.ND
+        JOIN SACH S2 ON S2.NS = M2.NS
+        GROUP BY D2.ND
+	) A
+);
+
+
+
+
+-- cau 23
+-- Tìm tên tên độc giả mượn ít tác phẩm nhất
+select D.ND, D.ten, count(distinct S.NT) as so_luong
+from DOCGIA D 
+join MUON M on M.ND = D.ND
+join SACH S on S.NS = M.NS
+group by D.ND, D.ten
+having count(distinct S.NT) = (
+	select min(A.so_luong)
+	from (
+		select count(distinct S2.NT) as so_luong
+		from DOCGIA D2
+		join MUON M2 on M2.ND = D2.ND
+		join SACH S2 on S2.NS = M2.NS
+		group by D2.ND
+	) A
+);
+
+
+
+
