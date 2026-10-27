@@ -76,3 +76,132 @@ join dienvien d on d.idfilm = f.idfilm
 join canhan c on c.idcn = d.idCN
 join canhan c2 on c2.idcn = f.nguoithuchien
 where c2.ho = "WILSON" and c2.ten = "HUGH";
+
+-- cau 9
+-- Họ tên cá nhân đã tham gia ít nhất 1 bộ phim do họ thực hiện
+
+select distinct concat(c.ho, ' ' ,c.ten) as hoten
+from canhan c 
+join dienvien d on d.idCN = c.idCN
+join film f on f.idFilm  = d.idFilm
+join canhan c2 on c2.id
+where c.idcn = f.nguoithuchien;
+
+-- cau 10 
+-- Họ tên cá nhân đã tham gia ít nhất 10 bộ phim do họ thực hiện
+
+select distinct concat(c.ho, ' ' ,c.ten) as hoten, count(f.idFilm) as sofilm
+from canhan c 
+join dienvien d on d.idcn = c.idcn
+join film f on f.idfilm = d.idfilm
+where c.idcn = f.nguoithuchien
+group by c.idcn, c.ho, c.ten
+having count(f.idfilm) >= 10;
+
+-- cau 11
+-- Tổng thù lao đã trả cho bộ phim 'TALE OF TWO CITIES'
+select sum(d.thulao) as tong
+from dienvien d 
+join film f on f.idfilm = d.idfilm
+where f.tua = 'TALE OF TWO CITIES';
+
+
+-- cau 12
+-- Số phim mỗi thể loại
+select l.tenloai, count(lp.idfilm) as sophim
+from loaiphim lp
+join loai l on l.idloai = lp.idloai
+group by l.tenloai;
+
+-- cau 13
+-- Tên loại có nhiều phim nhất
+select l.tenloai, count(lp.idfilm) as sophim
+from loaiphim lp
+join loai l on l.idloai = lp.idloai
+group by l.tenloai
+having count(lp.idfilm) in (
+    select max(sophim)
+    from (
+        select count(lp.idfilm) as sophim
+        from loaiphim lp
+        group by idloai
+    ) as bangdem
+);
+
+-- cau 14
+-- kinh phí trung bình của phim theo người thực hiện
+
+select concat(c.ho, ' ' ,c.ten) as hoten, avg(f.kinhphi) as trungbinh
+from canhan c 
+join film f on f.nguoithuchien = c.idcn
+group by c.idcn;
+
+
+-- cau 15 
+-- Họ tên người thực hiện đã thực hiện hơn 50 bộ phim
+
+select concat(c.ho, ' ' ,c.ten) as hoten, count(f.idfilm) as sophim
+from canhan c 
+join dienvien d on d.idcn = c.idcn 
+join film f on f.idfilm = d.idfilm
+group by c.idcn, c.ho, c.ten
+having count(f.idfilm) >= 50;
+
+-- cau 16
+-- Họ tên người thực hiện thực hiện nhiều phim nhất
+select concat(c.ho, ' ' ,c.ten) as hoten, count(f.idfilm) as sophim 
+from canhan c 
+join film f on f.nguoithuchien = c.idcn
+group by c.idcn
+having count(f.idfilm) = (
+    select max(sophim)
+    from (
+        select count(f.idFilm) as sophim
+        from film f
+        group by f.nguoithuchien
+    ) as bangtam
+);
+
+-- cau 17
+-- Họ tên diễn viên đã tham gia hơn 50 bộ phim
+select concat(c.ho, ' ' ,c.ten) as hoten, count(d.idfilm) as sophim
+from canhan c 
+join dienvien d on d.idcn = c.idcn
+join film f on f.idfilm = d.idfilm
+group by c.idcn, c.ho, c.ten 
+having count(d.idfilm) >= 50;
+
+-- cau 18
+-- Họ tên diễn viên tham gia nhiều phim nhất
+select concat(c.ho, ' ' ,c.ten) as hoten, count(d.idfilm) as sophim
+from canhan c 
+join dienvien d on d.idcn = c.idcn
+group by c.idcn, c.ho, c.ten
+having count(d.idfilm) = (
+    select max(sophim)
+    from (
+        select count(d.idfilm) as sophim
+        from dienvien d 
+        group by d.idcn
+    ) as bang
+);
+
+-- cau 19
+-- Tên bộ phim có kinh phí thực hiện cao nhất
+
+select tua, kinhphi
+from film
+where kinhphi = (
+	select max(kinhphi)
+    from film
+);
+
+-- cau 20
+-- Tên bộ phim có kinh phí thực hiện thấp nhất
+select tua, kinhphi
+from film
+where kinhphi = (
+    select min(kinhphi)
+    from film
+);
+
